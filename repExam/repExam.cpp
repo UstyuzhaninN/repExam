@@ -122,7 +122,29 @@ void deleteSong(SongList& list, const char* songname)
             cout << "Song is not found" << endl;
         }
     }
+    else
+    {
+        cout << "Song list is empty!" << endl;
+    }
 
+}
+
+void editTheLyrics(SongList& list, const char* songname, const char* newLyrics)
+{
+    bool isFound = false;
+    for (int i = 0; i < list.numberOfSongs; i++)
+    {
+        if (strcmp(list.songs[i].songName, songname) == 0)
+        {
+            isFound = true;
+            cout << "Lyrcs before edit: " << endl;
+            cout << list.songs[i].text << endl;
+            cout << "Lyrcs after edit: " << endl;
+            strncpy_s(list.songs[i].text, newLyrics, sizeof(list.songs[i].text - 1));
+            list.songs[i].text[sizeof(list.songs[i].text - 1)] = '\0';
+            cout << list.songs[i].text << endl;
+        }
+    }
 }
 
 void downloadSong(SongList list, const char* songname)
@@ -165,6 +187,8 @@ void downloadSong(SongList list, const char* songname)
         cout << "Song is not found" << endl;
     }
 }
+
+
 
 void searchByPerformer(SongList list, const char* performer)
 
@@ -220,10 +244,10 @@ int main()
     int exit = 1;
 
     while (exit)
-
     {
-        cout << "Menu:" << endl << "1. Add song" << endl << "2. Delete song" << endl << "3. Edit the text" << endl << "4. Download the song" << endl <<
-            "5. Search by musician" << endl << "6. Search by keyword" << endl << "7. Song list" << endl << "0. Exit" << endl;
+        cout << "Menu:" << endl << "1. Add song" << endl << "2. Delete song" << endl << "3. Edit the lyrics"
+            << endl << "4. Create txt file with lyrics" << endl << "5. Search by musician" << endl << "6. Search by keyword" << endl
+            << "7. Song list" << endl << "0. Exit" << endl;
 
         cin >> menu;
 
@@ -257,8 +281,20 @@ int main()
             deleteSong(list, "Weight");
             break;
         }
+        case 3: {
+            editTheLyrics(list, "Weight", "Lyrics changed");
+            break;
+        }
         case 4: {
             downloadSong(list, "Weight");
+            break;
+        }
+        case 5: {
+            searchByPerformer(list, "Agent Orrange");
+            break;
+        }
+        case 6: {
+            searchByKey(list, "na");
             break;
         }
         case 7: {
