@@ -15,8 +15,6 @@ struct Composer
     char surname[20];
 };
 
-
-
 struct Song
 {
     Composer composer;
@@ -26,8 +24,6 @@ struct Song
     char year[15];
 };
 
-
-
 struct SongList
 {
     Song* songs;
@@ -35,11 +31,8 @@ struct SongList
     int numberOfSongs = 0;
 };
 
-
-
-
-
-void fillSongInfo(Song& song, const char* songname, const char* performer, const char* composerName, const char* composerSurname, const char* year, const char* lyrics)
+void fillSongInfo(Song& song, const char* songname, const char* performer,
+    const char* composerName, const char* composerSurname, const char* year, const char* lyrics)
 {
     strncpy_s(song.songName, songname, sizeof(song.songName) - 1);
     song.songName[sizeof(song.songName) - 1] = '\0';
@@ -52,10 +45,8 @@ void fillSongInfo(Song& song, const char* songname, const char* performer, const
     strncpy_s(song.year, year, sizeof(song.year) - 1);
     song.year[sizeof(song.year) - 1] = '\0';
     strncpy_s(song.text, lyrics, sizeof(song.text) - 1);
-    song.text[sizeof(song.text) - 1] - '\0';
+    song.text[sizeof(song.text) - 1] = '\0';
 }
-
-
 
 void fillSongInfo(Song& song)
 {
@@ -67,8 +58,6 @@ void fillSongInfo(Song& song)
     cout << "Enter lyrics: "; cin.getline(song.text, 5000);
 }
 
-
-
 void printSong(Song song)
 {
     cout << "Performer: " << song.performer << ", Song: " << song.songName << endl;
@@ -76,14 +65,20 @@ void printSong(Song song)
     cout << song.text << endl;
 }
 
-
-
 void addSong(SongList& list, Song song)
 {
+    if(list.listSize == list.numberOfSongs-1) //проверка и уведичение размера массива
+    {
+        Song* newList = new Song[list.listSize *= 2];
+        for (int i = 0; i < list.numberOfSongs; i++)
+        {
+            newList[i] = list.songs[i];
+        }
+        delete[] list.songs;
+        list.songs = newList;
+    }
     list.songs[list.numberOfSongs++] = song;
 }
-
-
 
 void printSongList(SongList& list)
 {
@@ -96,52 +91,39 @@ void printSongList(SongList& list)
 
 }
 
-
-
 void deleteSong(SongList& list, const char* songname)
 {
-    bool isFound = false;
-    Song* newSongs = new Song[list.listSize - 1]; //создаем новый массив с размером на один меньше, чем был каталог
-    int newsize = 0;
-    for (int i = 0; i < list.numberOfSongs; i++) // перебор всех песен в каталоге
-
+    if(list.numberOfSongs>0)
     {
-
-        if (strcmp(list.songs[i].songName, songname) != 0) //если названия не совпали, то
-
+        bool isFound = false;
+        Song* newSongs = new Song[list.listSize - 1]; //создаем новый массив с размером на один меньше, чем был каталог
+        int newsize = 0;
+        for (int i = 0; i < list.numberOfSongs; i++) // перебор всех песен в каталоге
         {
-            newSongs[newsize++] = list.songs[i];
+            if (strcmp(list.songs[i].songName, songname) != 0) //если названия не совпали, то
+            {
+                newSongs[newsize++] = list.songs[i];
+            }
+            else
+            {
+                isFound = true;
+            }
         }
 
+        if (isFound)
+        {
+            delete[] list.songs;
+            list.songs = newSongs;
+            list.numberOfSongs = newsize;
+        }
         else
-
         {
-            isFound = true;
+            delete[] newSongs;
+            cout << "Song is not found" << endl;
         }
-
-    }
-
-
-
-    if (isFound)
-
-    {
-        delete[] list.songs;
-        list.songs = newSongs;
-        list.numberOfSongs = newsize;
-    }
-
-    else
-    {
-        delete[] newSongs;
-        cout << "Song is not found" << endl;
     }
 
 }
-
-
-
-
 
 void downloadSong(SongList list, const char* songname)
 {
@@ -165,11 +147,6 @@ void downloadSong(SongList list, const char* songname)
             isFound = true;
             break;
         }
-
-        else
-        {
-            cout << "Song is not found" << endl;
-        }
     }
 
     if (isFound)
@@ -183,36 +160,52 @@ void downloadSong(SongList list, const char* songname)
         fout << list.songs[i].text << endl;
         fout.close();
     }
+    else
+    {
+        cout << "Song is not found" << endl;
+    }
 }
 
+void searchByPerformer(SongList list, const char* performer)
 
-
-void searchByKey(SongList list, const char* keyword)
 {
     bool isFound = false;
     int i = 0;
 
     for (; i < list.numberOfSongs; i++)
     {
-
-
-
+        if (strstr(list.songs[i].performer, performer) != nullptr)
+        {
+            printSong(list.songs[i]);
+            cout << endl;
+            isFound = true;
+        }
     }
 
-    if (isFound)
-    {
-        printSong(list.songs[i]);
-    }
-
-    else
+    if (!isFound)
     {
         cout << "No match found" << endl;
     }
-
-
-
 }
 
+void searchByKey(SongList list, const char* keyword)
+{
+    bool isFound = false;
+    int i = 0;
+    for (; i < list.numberOfSongs; i++)
+    {
+        if (strstr(list.songs[i].text, keyword) != nullptr)
+        {
+            printSong(list.songs[i]);
+            cout << endl;
+            isFound = true;
+        }
+    }
+    if (!isFound)
+    {
+        cout << "No match found" << endl;
+    }
+}
 
 
 int main()
@@ -293,3 +286,4 @@ int main()
 //Поиск и отображение всех песен одного автора
 
 //Поиск и отображение Всех песен, содержащих слово, указанное пользователем
+
