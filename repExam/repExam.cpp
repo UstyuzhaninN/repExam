@@ -247,7 +247,7 @@ void editTheLyrics(SongList& list)
             cout << "Enter new lyrics: ";
             //cin.ignore();
             fillLyrics(list.songs[i]);
-            cout << "Lyrcs edited successfully" << endl;
+            cout << "Lyrics edited successfully" << endl;
         }
         else
         {
@@ -425,7 +425,7 @@ void searchByKey(SongList list, const char* keyword)
 void searchByKey(SongList list)
 {
     char keyword[50];
-    cout << "Enter keyword find the song: ";
+    cout << "Enter keyword to find the song: ";
     cin >> keyword;
     bool isFound = false;
     int i = 0;
@@ -438,6 +438,7 @@ void searchByKey(SongList list)
                 printSong(list.songs[i]);
                 cout << endl;
                 isFound = true;
+                break;
             }
         }
 
