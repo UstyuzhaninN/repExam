@@ -58,7 +58,7 @@ void fillSongInfo(Song& song, const char* songname, const char* performer,
 
 void fillLyrics(Song& song)
 {
-    cout << "Enter lyrics: ";
+    cout << "Enter lyrics (to quit type \"end\"): ";
     while (song.lyrics.lineCounter < MAX_LINES)
     {
         cin.getline(song.lyrics.lines[song.lyrics.lineCounter], MAX_LENGTH);
@@ -68,6 +68,30 @@ void fillLyrics(Song& song)
         }
         song.lyrics.lineCounter++;
     }
+}
+
+void fillLyricsByFile(Song& song)
+{
+    cout << "Enter path to file: ";
+    char path[256];
+    cin.getline(path,sizeof(path));
+
+    ifstream fin(path);
+    if (!fin.is_open())
+    {
+        cout << "Open error!" << endl;
+        return;
+    }
+    //создаем экземпляр класса для записи в него содержимого файла
+    Song temp;
+    int i = 0;
+    while (i < MAX_LINES && fin.getline(temp.lyrics.lines[i], MAX_LENGTH))
+    {
+        i++;
+    }
+    temp.lyrics.lineCounter = i;
+    song.lyrics = temp.lyrics;
+    fin.close();
 }
 
 void printLyrics(Song& song)
@@ -87,7 +111,19 @@ void fillSongInfo(Song& song)
     cout << "Enter composer`s name: "; cin.getline(song.composer.name, sizeof(song.composer.name));
     cout << "Enter composer`s surname: "; cin.getline(song.composer.surname, sizeof(song.composer.surname));
     cout << "Enter release year: "; cin.getline(song.year, sizeof(song.year));
-    fillLyrics(song);
+    int choice = 0;
+    cout << "To fill the lyrics: 1 - use file, 2 - write lyrics: ";
+    cin >> choice;
+    cin.ignore();
+    switch (choice)
+    {
+    case 1:
+        fillLyricsByFile(song);
+        break;
+    case 2:
+        fillLyrics(song);
+        break;
+    }
 }
 
 void printSong(Song song)
@@ -340,7 +376,7 @@ void downloadSong(SongList list)
         }
             for (int j = 0; j < list.songs[i].lyrics.lineCounter; j++)
             {
-                fout << list.songs[i].lyrics.lines[j];
+                fout << list.songs[i].lyrics.lines[j] << endl;
 
             }
         fout.close();
@@ -460,12 +496,12 @@ int main()
     list.songs = new Song[list.listSize];
     int menu;
     int exit = 1;
-
+    start:
     while (exit)
     {
         cout << "Menu:" << endl << "1. Add song" << endl << "2. Delete song" << endl << "3. Edit the lyrics"
             << endl << "4. Create txt file with lyrics" << endl << "5. Search by musician" << endl << "6. Search by keyword" << endl
-            << "7. Song list" << endl <<  endl;
+            << "7. Song list" << endl << "8. EXIT" << endl  << endl;
 
         cin >> menu;
         cin.ignore();
@@ -542,6 +578,11 @@ int main()
 #endif // DEBUG
         case 7: {
             printSongList(list);
+            break;
+        }
+        case 8: {
+            exit = 0;
+            goto start;
             break;
         }
         }
